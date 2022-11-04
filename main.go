@@ -1,6 +1,8 @@
 package main
 
 import (
+	"crypto/sha256"
+	"encoding/base64"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -26,6 +28,11 @@ func postUrls(context *gin.Context) {
 	if err := context.BindJSON(&newUrl); err != nil {
 		return
 	}
+	// Hash url, url safe encode hash and store first 8 chars of encoded string
+	h := sha256.New()
+	h.Write([]byte(newUrl.Url))
+	encodedString := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	newUrl.ShortCode = encodedString[:8]
 
 	urls = append(urls, newUrl)
 	context.IndentedJSON(http.StatusCreated, newUrl)
