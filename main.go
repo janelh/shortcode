@@ -39,10 +39,10 @@ func postUrls(context *gin.Context) {
 }
 
 func getUrlByShortCode(context *gin.Context) {
-	id := context.Param("shortCode")
+	shortCode := context.Param("shortCode")
 	for _, url := range urls {
-		if url.ShortCode == id {
-			context.IndentedJSON(http.StatusOK, url)
+		if url.ShortCode == shortCode {
+			context.Redirect(301, url.Url)
 			return
 		}
 	}
