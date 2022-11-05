@@ -3,9 +3,11 @@ package main
 import (
 	"crypto/sha256"
 	"encoding/base64"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"log"
+	"net/http"
+	"os"
 )
 
 type url struct {
@@ -50,6 +52,26 @@ func getUrlByShortCode(context *gin.Context) {
 }
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Cannot load .env file")
+	}
+
+	rdsUser := os.Getenv("RDS_USER")
+	if rdsUser == "" {
+		log.Fatal("Cannot find RDS_USER env variable")
+	}
+
+	rdsPwd := os.Getenv("RDS_PASSWORD")
+	if rdsPwd == "" {
+		log.Fatal("Cannot find RDS_PASSWORD env variable")
+	}
+
+	rdsHost := os.Getenv("RDS_HOST")
+	if rdsHost == "" {
+		log.Fatal("Cannot find RDS_HOST env variable")
+	}
+
 	router := gin.Default()
 	router.GET("urls", getUrls)
 	router.POST("urls", postUrls)
