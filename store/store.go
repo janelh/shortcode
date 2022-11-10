@@ -6,16 +6,16 @@ import (
 	"log"
 )
 
-type Database struct {
+type Store struct {
 	client *redis.Client
 }
 
 var (
-	ctx      = context.Background()
-	database = &Database{}
+	ctx   = context.Background()
+	store = &Store{}
 )
 
-func InitRedisClient(rdsHost string, rdsPwd string) {
+func InitStoreClient(rdsHost string, rdsPwd string) *Store {
 	client := redis.NewClient(&redis.Options{
 		Addr:     rdsHost,
 		Password: rdsPwd,
@@ -26,23 +26,23 @@ func InitRedisClient(rdsHost string, rdsPwd string) {
 		log.Fatalln("Failed to connect to redis")
 	}
 
-	database.client = client
-	log.Println("Connected to redis")
+	store.client = client
+	return store
 }
 
 func CreateUrl(shortcode string, url string) {
-	err := database.client.Set(ctx, shortcode, url, 1)
+	err := store.client.Set(ctx, shortcode, url, -1).Err()
 	if err != nil {
-		return
+		log.Fatalf("Failed to store url and shortcode - %s", err)
 	}
 	log.Println("Stored shortcode and url")
 }
 
 func RetrieveUrl(shortcode string) string {
-	result, err := database.client.Get(ctx, shortcode).Result()
+	url, err := store.client.Get(ctx, shortcode).Result()
 	if err != nil {
 		return err.Error()
 	}
 
-	return result
+	return url
 }

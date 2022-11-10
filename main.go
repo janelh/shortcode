@@ -36,19 +36,17 @@ func postUrls(context *gin.Context) {
 	h.Write([]byte(newUrl.Url))
 	encodedString := base64.URLEncoding.EncodeToString(h.Sum(nil))
 	newUrl.ShortCode = encodedString[:8]
-
-	urls = append(urls, newUrl)
+	store.CreateUrl(newUrl.ShortCode, newUrl.Url)
 	context.IndentedJSON(http.StatusCreated, newUrl)
 }
 
 func getUrlByShortCode(context *gin.Context) {
 	shortCode := context.Param("shortCode")
-	for _, url := range urls {
-		if url.ShortCode == shortCode {
-			context.Redirect(301, url.Url)
-			return
-		}
+	redirectUrl := store.RetrieveUrl(shortCode)
+	if redirectUrl != "" {
+		context.Redirect(301, redirectUrl)
 	}
+
 	context.IndentedJSON(http.StatusNotFound, gin.H{"message": "url not found"})
 }
 
@@ -61,7 +59,7 @@ func main() {
 	rdsPwd := os.Getenv("RDS_PASSWORD")
 	rdsHost := os.Getenv("RDS_HOST")
 
-	store.InitRedisClient(rdsHost, rdsPwd)
+	store.InitStoreClient(rdsHost, rdsPwd)
 
 	router := gin.Default()
 	router.GET("urls", getUrls)
