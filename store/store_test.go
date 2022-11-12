@@ -24,7 +24,10 @@ func TestInitStoreClient(t *testing.T) {
 func TestCreateAndRetrieve(t *testing.T) {
 	url := "https://go.dev/doc/tutorial/add"
 	shortcode := "s9g0Pfs5"
-	CreateUrl(shortcode, url)
-	result := RetrieveUrl(shortcode)
-	assert.EqualValues(t, result, url, "URL and short retrieval and/or creation failed")
+
+	err := CreateUrl(shortcode, url)
+	assert.NoError(t, err, "Url store failed")
+
+	result, _ := RetrieveUrl(shortcode)
+	assert.EqualValues(t, result, url, "URL retrieval failed")
 }

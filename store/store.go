@@ -23,26 +23,27 @@ func InitStoreClient(rdsHost string, rdsPwd string) *Store {
 	})
 
 	if err := client.Ping(ctx).Err(); err != nil {
-		log.Fatalln("Failed to connect to redis")
+		log.Fatalf("Failed to connect to redis- %s", err)
 	}
 
 	store.client = client
 	return store
 }
 
-func CreateUrl(shortcode string, url string) {
+func CreateUrl(shortcode string, url string) error {
 	err := store.client.Set(ctx, shortcode, url, -1).Err()
 	if err != nil {
-		log.Fatalf("Failed to store url and shortcode - %s", err)
+		log.Panicf("Failed to store url and shortcode - %s", err)
+		return err
 	}
-	log.Println("Stored shortcode and url")
+	return nil
 }
 
-func RetrieveUrl(shortcode string) string {
+func RetrieveUrl(shortcode string) (string, error) {
 	url, err := store.client.Get(ctx, shortcode).Result()
 	if err != nil {
-		return err.Error()
+		log.Printf("Failed to retrieve by shortcode - %s", shortcode)
 	}
 
-	return url
+	return url, err
 }

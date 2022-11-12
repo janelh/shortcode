@@ -23,19 +23,23 @@ func postUrl(context *gin.Context) {
 
 	shortcode := shortcode.GenerateShortcode(newUrl.Url)
 
-	store.CreateUrl(shortcode, newUrl.Url)
+	err := store.CreateUrl(shortcode, newUrl.Url)
+	if err != nil {
+		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Url not stored"})
+	}
+
 	hostUrl := "localhost:9001"
 	context.IndentedJSON(http.StatusCreated, hostUrl+shortcode)
 }
 
 func getUrl(context *gin.Context) {
 	shortCode := context.Param("shortCode")
-	redirectUrl := store.RetrieveUrl(shortCode)
-	if redirectUrl != "" {
-		context.Redirect(301, redirectUrl)
+	redirectUrl, err := store.RetrieveUrl(shortCode)
+	if err != nil {
+		context.IndentedJSON(http.StatusNotFound, gin.H{"message": "url not found"})
 	}
 
-	context.IndentedJSON(http.StatusNotFound, gin.H{"message": "url not found"})
+	context.Redirect(301, redirectUrl)
 }
 
 func main() {
