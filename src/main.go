@@ -1,13 +1,11 @@
 package main
 
 import (
-	"example.com/shortcode"
-	"example.com/store"
+	"example.com/src/shortcode"
+	"example.com/src/store"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"log"
 	"net/http"
-	"os"
 )
 
 type url struct {
@@ -28,7 +26,7 @@ func postUrl(context *gin.Context) {
 		context.IndentedJSON(http.StatusInternalServerError, gin.H{"message": "Url not stored"})
 	}
 
-	hostUrl := "localhost:9001"
+	hostUrl := "localhost:8080"
 	context.IndentedJSON(http.StatusCreated, hostUrl+shortcode)
 }
 
@@ -43,19 +41,22 @@ func getUrl(context *gin.Context) {
 }
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Cannot load .env file")
-	}
-
-	rdsPwd := os.Getenv("RDS_PASSWORD")
-	rdsHost := os.Getenv("RDS_HOST")
-
-	store.InitStoreClient(rdsHost, rdsPwd)
+	//err := godotenv.Load()
+	//if err != nil {
+	//	log.Fatal("Cannot load .env file")
+	//}
+	//
+	//rdsPwd := os.Getenv("RDS_PASSWORD")
+	//rdsHost := os.Getenv("RDS_HOST")
+	//
+	//store.InitStoreClient(rdsHost, rdsPwd)
 
 	router := gin.Default()
 	router.POST("urls", postUrl)
 	router.GET("urls/:shortCode", getUrl)
 
-	router.Run("localhost:9001")
+	err := router.Run()
+	if err != nil {
+		log.Fatalf("Failed to start Gin http server - %s", err)
+	}
 }
