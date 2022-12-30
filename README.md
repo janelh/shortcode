@@ -21,7 +21,9 @@ curl -X POST -d '{"url":"http://example.com"}' http://localhost:8080/urls
 ```
 The server will respond with the shortened URL, which can be accessed by visiting the shortcode URL:
 ```
-http://localhost:8080/urls/abc123
+{
+    "http://localhost:8080/urls/abc123"
+}
 ```
 
 http://localhost:8080/urls/abc123 will redirect to http://example.com

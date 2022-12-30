@@ -29,7 +29,7 @@ func postUrl(context *gin.Context) {
 	}
 
 	baseUrl := os.Getenv("BASE_URL")
-	context.IndentedJSON(http.StatusCreated, baseUrl+shortcode)
+	context.IndentedJSON(http.StatusCreated, baseUrl+"/"+shortcode)
 }
 
 func getUrl(context *gin.Context) {
