@@ -1,0 +1,23 @@
+version: "3.8"
+
+networks:
+  go-shortcode-network:
+
+services:
+  go-shortcode:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    container_name: go-shortcode
+    networks:
+      - go-shortcode-network
+
+  go-redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    container_name: go-redis
+    networks:
+      - go-shortcode-network

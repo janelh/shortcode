@@ -1,4 +1,4 @@
-module example.com
+module github.com/janelh/shortcode
 
 go 1.19
 

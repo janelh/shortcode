@@ -16,13 +16,13 @@ RUN go build -o ./app ./src/main.go
 
 FROM alpine:latest
 
-ENV GIN_MODE release
 
 RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 RUN mkdir -p /api
 WORKDIR /api
 COPY --from=builder /api/app .
+COPY .env .
 
 EXPOSE 8080
 
